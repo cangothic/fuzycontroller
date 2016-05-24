@@ -10,6 +10,12 @@ def intersection(line1, line2):
 def inter_point(point1, point2):
     m = (point2.y-point1.y)/(point2.x-point1.x)
     b = point2.y-point2.x*m
-    return Line(m, b)
+    if point1.x < point2.x:
+        interval = [point1.x, point2.x]
+        return Line(interval, m, b)
+    else:
+        interval = [point2.x, point1.x]
+        return Line(interval, m, b)
+
 
 
