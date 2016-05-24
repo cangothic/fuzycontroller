@@ -13,7 +13,7 @@ class Section:
     # Evaluate an integral in the defined interval
     def evaluate_integral(self):
         pass
-    
+
 
 # class responsible for defining a straight line in an interval
 class Line(Section):
@@ -23,11 +23,16 @@ class Line(Section):
         self.b = b
 
     def evaluate(self, value):
-        return self.m*value + self.b
+        return self.m * value + self.b
 
     def evaluate_integral(self):
         return self.__integral(self.interval[2]) - self.__integral(self.interval[1])
 
     def __integral(self, value):
-        return (self.m/2) * value**2 + self.b*value
+        return (self.m / 2) * value ** 2 + self.b * value
 
+
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
