@@ -18,7 +18,6 @@ class Section:
 # class responsible for defining a straight line in an interval
 class Line(Section):
     def __init__(self, interval, m, b):
-        #super.__init__(self,interval)
         self.interval = interval
         self.m = m
         self.b = b
