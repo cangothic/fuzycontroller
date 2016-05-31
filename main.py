@@ -191,7 +191,7 @@ modus_ponens_difuso(parametros)
 if __name__ == '__main__':
     app = QtGui.QApplication([])
     window = ControllerView.instance()
-    w1 = GraphicContainer(width=5, height=5, dpi=100, function=lambda x: x*x)
+    w1 = GraphicContainer(width=5, height=5, dpi=100, function=lambda x: funcionHMuyBaja.buscar(x).evaluate(x))
     window.add_new_window(w1)
     window.show()
     app.exec_()

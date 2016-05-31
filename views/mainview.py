@@ -48,7 +48,8 @@ class ControllerView(QtGui.QMainWindow):
 class GraphicInterface(FigureCanvas):
     """esto es una interfaz para crear una grafica figureCanvas hereda de Qwidget"""
 
-    def __init__(self, parent=None, width=5, height=4, dpi=100, inicial=0.0,final=100.0, intervalo=0.01, function=lambda x: x*x):
+    def __init__(self, parent=None, width=5, height=4, dpi=100, inicial=0.0, final=100.0, intervalo=0.01,
+                 function=lambda x: x * x):
         fig = Figure(figsize=(width, height), dpi=dpi, facecolor='None', edgecolor='None')
         self.axes = fig.add_subplot(111)
         self.axes.hold(False)
@@ -60,7 +61,7 @@ class GraphicInterface(FigureCanvas):
         self.inicial = inicial
         self.final = final
         self.intervalo = intervalo
-        self.function=function
+        self.function = function
         self.compute_initial_figure()
 
     def compute_initial_figure(self):
@@ -69,18 +70,20 @@ class GraphicInterface(FigureCanvas):
 
 class StaticGraphic(GraphicInterface):
     """esto es una clase implementada de la interfaz GraphicInterface"""
+
     def __init__(self, *args, **kwargs):
         super(StaticGraphic, self).__init__(*args, **kwargs)
 
     def compute_initial_figure(self):
         self.name = "grafica estatica"
         x = arange(self.inicial, self.final, self.intervalo)
-        y = self.function(x)
+        y = list(map(self.function, x))
         self.axes.plot(x, y)
 
 
 class DynamicGraphic(GraphicInterface):
     """esto es una clase implementada de la interfaz GraphicInterface"""
+
     def __init__(self, *args, **kwargs):
         GraphicInterface.__init__(self, *args, **kwargs)
         self.name = "grafica dinamica"
@@ -101,11 +104,13 @@ class DynamicGraphic(GraphicInterface):
 
 class GraphicContainer(QtGui.QWidget):
     "clase creaga para contener objetos de  la  clase Graphic interface y visualizarlos con Pyqt4"
+
     def __init__(self, *args, **kwargs):
         QtGui.QWidget.__init__(self)
         self.name = "grafica"
-        self.grafica=StaticGraphic(self,*args, **kwargs)
+        self.grafica = StaticGraphic(self, *args, **kwargs)
         self.setFocus()
+
 
 if __name__ == '__main__':
     app = QtGui.QApplication([])
