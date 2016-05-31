@@ -1,4 +1,6 @@
 from models.model_sections import Line
+
+
 class Piecewise_funtion:
     def __init__(self, section):
         self.function = [section]

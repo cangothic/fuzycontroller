@@ -1,6 +1,7 @@
 from models.model_sections import Line
-from models.piecewise_functions import Piecewise_funtion
 from models.variable import Tag,Variable,Status_variable,Control_variable
+from views.mainview import *
+from models.piecewise_functions import Piecewise_funtion
 
 
 lineaTA = Line([0,10],0,1)
@@ -135,16 +136,16 @@ control_variable_Variacion_Temperatura.add_tag(tagVSP)
 control_variable_Variacion_Temperatura.add_tag(tagVSN)
 control_variable_Variacion_Temperatura.add_tag(tagVSG)
 
-control_variable_Variacion_Temperatura.agregarTagFAM(tagVSN,[0,0])
-control_variable_Variacion_Temperatura.agregarTagFAM(tagVSN,[0,1])
-control_variable_Variacion_Temperatura.agregarTagFAM(tagVSG,[0,2])
-control_variable_Variacion_Temperatura.agregarTagFAM(tagVSG,[0,3])
-control_variable_Variacion_Temperatura.agregarTagFAM(tagVSG,[0,4])
-control_variable_Variacion_Temperatura.agregarTagFAM(tagVM,[1,0])
-control_variable_Variacion_Temperatura.agregarTagFAM(tagVM,[1,1])
-control_variable_Variacion_Temperatura.agregarTagFAM(tagVSP,[1,2])
-control_variable_Variacion_Temperatura.agregarTagFAM(tagVSP,[1,3])
-control_variable_Variacion_Temperatura.agregarTagFAM(tagVSN,[1,4])
+control_variable_Variacion_Temperatura.agregarTagFAM(tagVSN, [0, 0])
+control_variable_Variacion_Temperatura.agregarTagFAM(tagVSN, [0, 1])
+control_variable_Variacion_Temperatura.agregarTagFAM(tagVSG, [0, 2])
+control_variable_Variacion_Temperatura.agregarTagFAM(tagVSG, [0, 3])
+control_variable_Variacion_Temperatura.agregarTagFAM(tagVSG, [0, 4])
+control_variable_Variacion_Temperatura.agregarTagFAM(tagVM, [1, 0])
+control_variable_Variacion_Temperatura.agregarTagFAM(tagVM, [1, 1])
+control_variable_Variacion_Temperatura.agregarTagFAM(tagVSP, [1, 2])
+control_variable_Variacion_Temperatura.agregarTagFAM(tagVSP, [1, 3])
+control_variable_Variacion_Temperatura.agregarTagFAM(tagVSN, [1, 4])
 control_variable_Variacion_Temperatura.agregarTagFAM(tagVM,[2,0])
 control_variable_Variacion_Temperatura.agregarTagFAM(tagVM,[2,1])
 control_variable_Variacion_Temperatura.agregarTagFAM(tagVM,[2,2])
@@ -186,3 +187,11 @@ modus_ponens_difuso(parametros)
 #    print()
 
 
+
+if __name__ == '__main__':
+    app = QtGui.QApplication([])
+    window = ControllerView.instance()
+    w1 = GraphicContainer(width=5, height=5, dpi=100, function=lambda x: x*x)
+    window.add_new_window(w1)
+    window.show()
+    app.exec_()
