@@ -58,7 +58,7 @@ class Control_variable(Variable):
             iteracion += 1
             self.agregarTagFAM(tag, indices, sub_arreglo, iteracion)
 
-    def accederTag(self, indices, sub_arreglo=[], iteracion=0):
+    def accederTagIndices(self, indices, sub_arreglo=[], iteracion=0):
         if iteracion == 0:  # se debe mejorar para no ejecutar este codigo cada recursion
             sub_arreglo = self.FAM
         if iteracion == len(indices) - 1:
@@ -66,7 +66,12 @@ class Control_variable(Variable):
         else:
             sub_arreglo = sub_arreglo[indices[iteracion]]
             iteracion += 1
-            return self.accederTag(indices, sub_arreglo, iteracion)
+            return self.accederTagIndices(indices, sub_arreglo, iteracion)
+    def accederTagEtiquetas(self, etiquetas):
+        indices= []
+        for etiqueta in etiquetas:
+            indices.append(etiqueta.indice)
+        return self.accederTagIndices(indices)
 
     def add_tag(self, tag):
         self.tags.append(tag)

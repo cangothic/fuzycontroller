@@ -84,7 +84,7 @@ variables.append(status_variable_Humedad)
 
 control_variable_Variacion_Temperatura = Control_variable(variables)
 
-print(control_variable_Variacion_Temperatura.FAM)
+#print(control_variable_Variacion_Temperatura.FAM)
 lineaVA = Line([-15,-10],0.2,3)
 lineaVB = Line([-10,-7.5],-0.4,-3)
 funcionBajadaGrande =Piecewise_funtion(lineaVA)
@@ -101,7 +101,7 @@ funcionBajadaPequeña = Piecewise_funtion(lineaVE)
 funcionBajadaPequeña.unir(lineaVF)
 
 lineaVG = Line([-1,0],1,1)
-lineaVH = Line([0.1],-1,1)
+lineaVH = Line([0,1],-1,1)
 funcionMantener = Piecewise_funtion(lineaVG)
 funcionMantener.unir(lineaVH)
 
@@ -167,30 +167,39 @@ fuzzyficacionTemperatura = status_variable_Temperatura.test_tag(19.5)
 fuzzyficacionHumedad = status_variable_Humedad.test_tag(65)
 parametros = [fuzzyficacionTemperatura,fuzzyficacionHumedad]
 
-def modus_ponens_difuso(parametros,indice = 0,operandos = []): #mejorar con una cola para que sea mas optimo los operandos
-    if(indice==len(parametros)):
+#retorna arreglo de pice_wise_function
+def modus_ponens_difuso(parametros,window,indice = 0,operandos = []): #mejorar con una cola para que sea mas optimo los operandos
+    if(indice==len(parametros) and len(parametros)>0):
+        minimo = operandos[0]
+        etiquetas = []
         for i in range(0,len(operandos)):
-            print(operandos[i])
-        print("hasta aqui")
+            etiquetas.append(operandos[i][0])
+            if(operandos[i][1]<minimo[1]):
+                minimo = operandos[i]
+        tag = control_variable_Variacion_Temperatura.accederTagEtiquetas(etiquetas)
+        funcion = tag.picewise_function.alfa_corte(minimo[1])
+        funcion_lambda = lambda x: funcion.buscar(x).evaluate(x)
+        name = tag.tag + str(minimo[1])
+        w1 = GraphicContainer(width=5, height=5, dpi=100, functions=[funcion_lambda], singletons=[],name= name,inicial=funcion.function[0].interval[0]-5,final = funcion.function[-1].interval[1] + 5)
+
+        window.add_new_window(w1)
+
         return
-    for i in range (0,len(parametros[indice])):
+    for i in range (0,len(parametros)):
         operandos.append(parametros[indice][i])
         indiceTemp = indice+1
-        modus_ponens_difuso(parametros,indiceTemp,operandos)  #mejorar con variables por referencia el indice
+        modus_ponens_difuso(parametros,window,indiceTemp,operandos)  #mejorar con variables por referencia el indice
         operandos.pop()
 
-modus_ponens_difuso(parametros)
-#for i in range (0,5):
-#    for j in range (0,5):
-#        a = control_variable_Variacion_Temperatura.accederTag([i,j])
-#        print(a.tag,end=' ')
-#    print()
 
 
 
 if __name__ == '__main__':
+
+
     app = QtGui.QApplication([])
     window = ControllerView.instance()
+    piece_wise_functions = modus_ponens_difuso(parametros, window)
     baja=lambda x:funcionTBaja.buscar(x).evaluate(x)
     normal=lambda x:funcionTNormal.buscar(x).evaluate(x)
     arreglodefunciones =[]
@@ -200,7 +209,26 @@ if __name__ == '__main__':
     linea=Line([-30,20],0,0.5)
     linealambda= lambda x: linea.evaluate(x)
     arreglodefunciones.append(linealambda)
-    w1 = GraphicContainer(width=5, height=5, dpi=100, functions=arreglodefunciones, singletons=singletons)
+    w1 = GraphicContainer(width=5, height=5, dpi=100, functions=arreglodefunciones, singletons=singletons,name = "grafica1")
     window.add_new_window(w1)
+    alta = lambda x:funcionTAlta.buscar(x).evaluate(x)
+    arreglodefunciones.append(alta)
+    w2 = GraphicContainer(width=5, height=5, dpi=100, functions=arreglodefunciones, singletons=singletons,name="grafica2")
+
+
+    window.add_new_window(w1)
+    #window.change_window(w1.name)
+    window.change_window(w1.name)
+
+    print (window._ControllerView__windows)
+
+    for elemento in window._ControllerView__windows:
+        print (elemento)
+    window.change_window("SN0.09999999999999964")
+
+
     window.show()
     app.exec_()
+    app = QtGui.QApplication([])
+
+
