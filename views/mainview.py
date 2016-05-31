@@ -49,7 +49,7 @@ class GraphicInterface(FigureCanvas):
     """esto es una interfaz para crear una grafica figureCanvas hereda de Qwidget"""
 
     def __init__(self, parent=None, width=5, height=4, dpi=100, inicial=0.0, final=100.0, intervalo=0.01,
-                 function=lambda x: x * x):
+                 functions=lambda x: x * x, singletons=[]):
         fig = Figure(figsize=(width, height), dpi=dpi, facecolor='None', edgecolor='None')
         self.axes = fig.add_subplot(111)
         self.axes.hold(False)
@@ -61,7 +61,8 @@ class GraphicInterface(FigureCanvas):
         self.inicial = inicial
         self.final = final
         self.intervalo = intervalo
-        self.function = function
+        self.functions = functions
+        self.singletons = singletons
         self.compute_initial_figure()
 
     def compute_initial_figure(self):
@@ -77,8 +78,13 @@ class StaticGraphic(GraphicInterface):
     def compute_initial_figure(self):
         self.name = "grafica estatica"
         x = arange(self.inicial, self.final, self.intervalo)
-        y = list(map(self.function, x))
-        self.axes.plot(x, y)
+        self.axes.hold()
+        for function in self.functions:
+            y=list(map(function, x))
+            self.axes.plot(x, y)
+            if len(self.singletons) != 0:
+                for singleton in self.singletons:
+                    self.axes.axvline(singleton, color='k')
 
 
 class DynamicGraphic(GraphicInterface):
@@ -115,7 +121,7 @@ class GraphicContainer(QtGui.QWidget):
 if __name__ == '__main__':
     app = QtGui.QApplication([])
     window = ControllerView.instance()
-    w1 = GraphicContainer(width=5, height=5, dpi=100, function=lambda x: sin(x))
+    w1 = GraphicContainer(width=5, height=5, dpi=100, functions=lambda x: sin(x))
     window.add_new_window(w1)
     window.show()
     app.exec_()

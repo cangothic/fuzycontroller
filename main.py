@@ -164,7 +164,7 @@ control_variable_Variacion_Temperatura.agregarTagFAM(tagVBG,[4,4])
 
 #ejemplo
 fuzzyficacionTemperatura = status_variable_Temperatura.test_tag(19.5)
-fuzzyficacionHumedad =  status_variable_Humedad.test_tag(65)
+fuzzyficacionHumedad = status_variable_Humedad.test_tag(65)
 parametros = [fuzzyficacionTemperatura,fuzzyficacionHumedad]
 
 def modus_ponens_difuso(parametros,indice = 0,operandos = []): #mejorar con una cola para que sea mas optimo los operandos
@@ -191,7 +191,16 @@ modus_ponens_difuso(parametros)
 if __name__ == '__main__':
     app = QtGui.QApplication([])
     window = ControllerView.instance()
-    w1 = GraphicContainer(width=5, height=5, dpi=100, function=lambda x: funcionHMuyBaja.buscar(x).evaluate(x))
+    baja=lambda x:funcionTBaja.buscar(x).evaluate(x)
+    normal=lambda x:funcionTNormal.buscar(x).evaluate(x)
+    arreglodefunciones =[]
+    arreglodefunciones.append(baja)
+    arreglodefunciones.append(normal)
+    singletons=[3, 5]
+    linea=Line([-30,20],0,0.5)
+    linealambda= lambda x: linea.evaluate(x)
+    arreglodefunciones.append(linealambda)
+    w1 = GraphicContainer(width=5, height=5, dpi=100, functions=arreglodefunciones, singletons=singletons)
     window.add_new_window(w1)
     window.show()
     app.exec_()
