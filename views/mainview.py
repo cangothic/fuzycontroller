@@ -84,7 +84,7 @@ class StaticGraphic(GraphicInterface):
         for function in self.functions:
             i=i+1
             y=list(map(function, x))
-            self.axes.plot(x, y,label=str(i))
+            self.axes.plot(x, y, label=str(i))
             self.axes.legend(loc=2)
             if len(self.singletons) != 0:
                 for singleton in self.singletons:
@@ -118,8 +118,37 @@ class GraphicContainer(QtGui.QWidget):
     def __init__(self, *args, **kwargs):
         QtGui.QWidget.__init__(self)
         self.grafica = StaticGraphic(self, *args, **kwargs)
+        self.aplication = ControllerView.instance()
         self.name = self.grafica.name
         self.setFocus()
+        self.botton = QtGui.QPushButton("devolverse a menu",self)
+        self.botton.move(500,40)
+        self.botton.clicked.connect(lambda: self.aplication.change_window("menu"))
+
+
+class Menu(QtGui.QWidget):
+    def __init__(self,parent=None):
+        self.aplication = ControllerView.instance()
+        self.viajes = self.aplication._ControllerView__windows
+        QtGui.QWidget.__init__(self,parent)
+        self.name = "menu"
+        self.combobox = QtGui.QComboBox(self)
+        self.combobox.setGeometry(0,0,400,30)
+        for viaje in self.viajes:
+            self.combobox.addItem(viaje)
+        self.timer = QtCore.QTimer(self)
+        self.timer.timeout.connect(self.actualizarclaves)
+        self.timer.start(1000)
+        self.botton = QtGui.QPushButton("ir a grafica", self)
+        self.botton.move(0,40)
+        self.botton.clicked.connect(lambda: self.aplication.change_window(self.combobox.currentText()))
+
+    def actualizarclaves(self):
+        self.viajes = self.aplication._ControllerView__windows
+        for viaje in self.viajes:
+            if viaje != "menu":
+                self.combobox.addItem(viaje)
+        self.timer.stop()
 
 
 if __name__ == '__main__':

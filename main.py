@@ -238,6 +238,8 @@ if __name__ == '__main__':
 
     app = QtGui.QApplication([])
     window = ControllerView.instance()
+    menu=Menu()
+    window.add_new_window(menu)
     piece_wise_functions = modus_ponens_difuso(parametros, window)
     agregacion(piece_wise_functions,window)
     baja=lambda x:funcionTBaja.buscar(x).evaluate(x)
@@ -257,14 +259,11 @@ if __name__ == '__main__':
 
 
     window.add_new_window(w1)
-    #window.change_window(w1.name)
-    window.change_window(w1.name)
 
     print (window._ControllerView__windows)
 
     for elemento in window._ControllerView__windows:
         print (elemento)
-    window.change_window("agregacion")
 
 
     window.show()
