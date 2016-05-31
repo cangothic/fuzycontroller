@@ -45,7 +45,12 @@ class Line(Section):
     def __integral(self, value):
         return (self.m / 2) * value ** 2 + self.b * value
 
+    def intersectar(self,linea_b): #mejorar por interseccion general!!
+        puntos = []
+        if(linea_b.m!=self.m):
 
+            puntos.append((linea_b.b-self.b)/(self.m-linea_b.m))
+        return puntos
 class Point:
     def __init__(self, x, y):
         self.x = x

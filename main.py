@@ -168,7 +168,7 @@ fuzzyficacionHumedad = status_variable_Humedad.test_tag(65)
 parametros = [fuzzyficacionTemperatura,fuzzyficacionHumedad]
 
 #retorna arreglo de pice_wise_function
-def modus_ponens_difuso(parametros,window,indice = 0,operandos = []): #mejorar con una cola para que sea mas optimo los operandos
+def modus_ponens_difuso(parametros,window,indice = 0,retornos = [],operandos = []): #mejorar con una cola para que sea mas optimo los operandos
     if(indice==len(parametros) and len(parametros)>0):
         minimo = operandos[0]
         etiquetas = []
@@ -178,6 +178,7 @@ def modus_ponens_difuso(parametros,window,indice = 0,operandos = []): #mejorar c
                 minimo = operandos[i]
         tag = control_variable_Variacion_Temperatura.accederTagEtiquetas(etiquetas)
         funcion = tag.picewise_function.alfa_corte(minimo[1])
+        retornos.append(funcion)
         funcion_lambda = lambda x: funcion.buscar(x).evaluate(x)
         name = tag.tag + str(minimo[1])
         w1 = GraphicContainer(width=5, height=5, dpi=100, functions=[funcion_lambda], singletons=[],name= name,inicial=funcion.function[0].interval[0]-5,final = funcion.function[-1].interval[1] + 5)
@@ -188,18 +189,57 @@ def modus_ponens_difuso(parametros,window,indice = 0,operandos = []): #mejorar c
     for i in range (0,len(parametros)):
         operandos.append(parametros[indice][i])
         indiceTemp = indice+1
-        modus_ponens_difuso(parametros,window,indiceTemp,operandos)  #mejorar con variables por referencia el indice
+        modus_ponens_difuso(parametros,window,indiceTemp,retornos,operandos)  #mejorar con variables por referencia el indice
         operandos.pop()
+    return retornos
+
+def intersecciones_piece_wise_functions(piece_wise_function_a,piece_wise_function_b):
+    puntos = []
+    for segmento_a in piece_wise_function_a.function:
+        for segmento_b in piece_wise_function_b.function:
+            puntos.extend(segmento_a.intersectar(segmento_b))
+    return puntos
+def agregacion(piece_wise_functions,window):
+    puntos = []
+    for i in range (0,len(piece_wise_functions)):
+        for j in range(i+1,len(piece_wise_functions)):
+            piece_wise_function_a = piece_wise_functions[i]
+            piece_wise_function_b = piece_wise_functions[j]
+            puntos.extend(intersecciones_piece_wise_functions(piece_wise_function_a,piece_wise_function_b))
 
 
+    nueva_funcion = Piecewise_funtion(None)  # borrar
+    ultimo_punto = piece_wise_functions[0].function[0].interval[0]
+    for piece_wise_function in piece_wise_functions:
+        if(piece_wise_function.function[0].interval[0]<ultimo_punto):
+            ultimo_punto = piece_wise_function.function[0].interval[0]
+    puntos.sort()
+    for punto in puntos:
+        if(ultimo_punto>punto):
+            temp = punto
+            punto = ultimo_punto
+            ultimo_punto = temp
+        punto_medio = (ultimo_punto+punto)/2
+        mayor = piece_wise_functions[0].buscar(punto_medio)
+        for piece_wise_function in piece_wise_functions:
+            a = piece_wise_function.buscar(punto_medio).evaluate(punto_medio)
+            b = mayor.evaluate(punto_medio)
+            if(a>=b):
+                mayor = piece_wise_function.buscar(punto_medio)
+        mayor.interval = [ultimo_punto,punto]
+        nueva_funcion.unir(mayor)
+        ultimo_punto = punto
+    funcion_lambda = lambda x: nueva_funcion.buscar(x).evaluate(x)
+    w1 = GraphicContainer(width=5, height=5, dpi=100, functions=[funcion_lambda], singletons=[], name="agregacion",inicial=-8, final=12)
 
-
+    window.add_new_window(w1)
 if __name__ == '__main__':
 
 
     app = QtGui.QApplication([])
     window = ControllerView.instance()
     piece_wise_functions = modus_ponens_difuso(parametros, window)
+    agregacion(piece_wise_functions,window)
     baja=lambda x:funcionTBaja.buscar(x).evaluate(x)
     normal=lambda x:funcionTNormal.buscar(x).evaluate(x)
     arreglodefunciones =[]
@@ -224,7 +264,7 @@ if __name__ == '__main__':
 
     for elemento in window._ControllerView__windows:
         print (elemento)
-    window.change_window("SN0.09999999999999964")
+    window.change_window("agregacion")
 
 
     window.show()

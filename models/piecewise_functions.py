@@ -32,30 +32,11 @@ class Piecewise_funtion:
 
     def alfa_corte(self,y): #revisar si es alfa corte mayor o menor, es el que lo incluye revisar bien intervalos y los ciclos
         nueva_funcion =  Piecewise_funtion(None) #borrar
-        ultimo_punto = 0
+        ultimo_punto = self.function[0].interval[0] - 1
 
-        section = self.function[0]   #ejecucion cero para iniciar el pieceWise
-        puntos = section.puntos_alfa_corte(y)
-        for punto in puntos:
-            punto_medio = (punto + ultimo_punto) / 2
-            if (section.evaluate(punto_medio) <= y):
-                linea = Line([ultimo_punto, punto], section.m, section.b)
-                nueva_funcion.unir(linea)
-            else:
-                linea = Line([ultimo_punto, punto], 0, y)
-                nueva_funcion.unir(linea)
-            ultimo_punto = punto
-        if (ultimo_punto != section.interval[1]):  # se revisa hasta el final del segment
-            punto_medio = (ultimo_punto + section.interval[1]) / 2
-            if (section.evaluate(punto_medio) <= y):
-                linea = Line([ultimo_punto, section.interval[1]], section.m, section.b)
-                nueva_funcion.unir(linea)
-            else:
-                linea = Line([ultimo_punto, section.interval[1]], 0, y)
-                nueva_funcion.unir(linea)
-            ultimo_punto = section.interval[1]
 
-        for i in range (1,len(self.function)):
+
+        for i in range (0,len(self.function)):
             section = self.function[i]
             puntos =  section.puntos_alfa_corte(y)
             for punto in puntos:
@@ -75,5 +56,5 @@ class Piecewise_funtion:
                 else:
                     linea = Line([ultimo_punto, section.interval[1]], 0, y)
                     nueva_funcion.unir(linea)
-                ultimo_punto = punto
+                ultimo_punto = section.interval[1]
         return nueva_funcion
