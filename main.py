@@ -2,7 +2,7 @@ from models.model_sections import Line
 from models.variable import Tag,Variable,Status_variable,Control_variable
 from views.mainview import *
 from models.piecewise_functions import Piecewise_funtion
-
+import copy
 
 lineaTA = Line([0,10],0,1)
 lineaTB = Line([10,15],-0.2,3)
@@ -209,26 +209,35 @@ def agregacion(piece_wise_functions,window):
 
 
     nueva_funcion = Piecewise_funtion(None)  # borrar
-    ultimo_punto = piece_wise_functions[0].function[0].interval[0]
+    punto_pasado = piece_wise_functions[0].function[0].interval[0]
+    ultimo_punto = piece_wise_functions[0].function[0].interval[1]
     for piece_wise_function in piece_wise_functions:
-        if(piece_wise_function.function[0].interval[0]<ultimo_punto):
-            ultimo_punto = piece_wise_function.function[0].interval[0]
+        if(piece_wise_function.function[0].interval[0]<punto_pasado):
+            punto_pasado = piece_wise_function.function[0].interval[0]
+        if(piece_wise_function.function[-1].interval[1]>ultimo_punto):
+            ultimo_punto = piece_wise_function.function[-1].interval[1]
     puntos.sort()
+    if(puntos[-1]<ultimo_punto):
+        puntos.append(ultimo_punto)
     for punto in puntos:
-        if(ultimo_punto>punto):
+        if(punto_pasado>punto):
             temp = punto
-            punto = ultimo_punto
-            ultimo_punto = temp
-        punto_medio = (ultimo_punto+punto)/2
-        mayor = piece_wise_functions[0].buscar(punto_medio)
+            punto = punto_pasado
+            punto_pasado = temp
+        punto_medio = (punto_pasado+punto)/2
+        mayor = piece_wise_functions[0]
         for piece_wise_function in piece_wise_functions:
             a = piece_wise_function.buscar(punto_medio).evaluate(punto_medio)
-            b = mayor.evaluate(punto_medio)
+            b = mayor.buscar(punto_medio).evaluate(punto_medio)
             if(a>=b):
-                mayor = piece_wise_function.buscar(punto_medio)
-        mayor.interval = [ultimo_punto,punto]
-        nueva_funcion.unir(mayor)
-        ultimo_punto = punto
+                mayor = piece_wise_function
+        for segmento in mayor.function:
+            if(punto_pasado<=segmento.interval[0]<=punto or punto_pasado<=segmento.interval[1]<=punto):
+                nuevo_segmento = copy.deepcopy(segmento)
+                nuevo_segmento.interval[0] = max(nuevo_segmento.interval[0],punto_pasado)
+                nuevo_segmento.interval[1] = min(nuevo_segmento.interval[1],punto)
+                nueva_funcion.unir(nuevo_segmento)
+        punto_pasado = punto
     funcion_lambda = lambda x: nueva_funcion.buscar(x).evaluate(x)
     w1 = GraphicContainer(width=5, height=5, dpi=100, functions=[funcion_lambda], singletons=[], name="agregacion",inicial=-8, final=12)
 
@@ -242,29 +251,21 @@ if __name__ == '__main__':
     window.add_new_window(menu)
     piece_wise_functions = modus_ponens_difuso(parametros, window)
     agregacion(piece_wise_functions,window)
-    baja=lambda x:funcionTBaja.buscar(x).evaluate(x)
-    normal=lambda x:funcionTNormal.buscar(x).evaluate(x)
-    arreglodefunciones =[]
-    arreglodefunciones.append(baja)
-    arreglodefunciones.append(normal)
-    singletons=[3, 5]
-    linea=Line([-30,20],0,0.5)
-    linealambda= lambda x: linea.evaluate(x)
-    arreglodefunciones.append(linealambda)
-    w1 = GraphicContainer(width=5, height=5, dpi=100, functions=arreglodefunciones, singletons=singletons,name = "grafica1")
+
+    def convertirLambda(funcion):
+        return lambda x: funcion.buscar(x).evaluate(x)
+    arreglodefuncionestemperatura = [convertirLambda(funcionTMuyBaja),convertirLambda(funcionTBaja), convertirLambda(funcionTNormal),convertirLambda(funcionTAlta), convertirLambda(funcionTMuyAlta)]
+    arreglodefuncioneshumedad = [convertirLambda(funcionHMuyBaja),convertirLambda(funcionHBaja), convertirLambda(funcionHNormal),convertirLambda(funcionHAlta), convertirLambda(funcionHMuyAlta)]
+    arreglodefuncionesvtemperatura = [convertirLambda(funcionBajadaGrande),convertirLambda(funcionBajadaNormal), convertirLambda(funcionBajadaPequeña),convertirLambda(funcionMantener), convertirLambda(funcionSubidaPequena),convertirLambda(funcionSubidaNormal),convertirLambda(funcionSubidaGrande)]
+
+
+    w1 = GraphicContainer(width=5, height=5, dpi=100, functions=arreglodefuncionestemperatura, singletons=[],name = "Temperatura",final = 40)
     window.add_new_window(w1)
-    alta = lambda x:funcionTAlta.buscar(x).evaluate(x)
-    arreglodefunciones.append(alta)
-    w2 = GraphicContainer(width=5, height=5, dpi=100, functions=arreglodefunciones, singletons=singletons,name="grafica2")
+    w2 = GraphicContainer(width=5, height=5, dpi=100, functions=arreglodefuncioneshumedad, singletons=[],name = "Humedad")
+    window.add_new_window(w2)
 
-
-    window.add_new_window(w1)
-
-    print (window._ControllerView__windows)
-
-    for elemento in window._ControllerView__windows:
-        print (elemento)
-
+    w3 = GraphicContainer(width=5, height=5, dpi=100, functions=arreglodefuncionesvtemperatura, singletons=[],name = "Variacion de Temperatura",inicial = -15,final = 15)
+    window.add_new_window(w3)
 
     window.show()
     app.exec_()

@@ -32,7 +32,7 @@ class Piecewise_funtion:
 
     def alfa_corte(self,y): #revisar si es alfa corte mayor o menor, es el que lo incluye revisar bien intervalos y los ciclos
         nueva_funcion =  Piecewise_funtion(None) #borrar
-        ultimo_punto = self.function[0].interval[0] - 1
+        ultimo_punto = self.function[0].interval[0]
 
 
 

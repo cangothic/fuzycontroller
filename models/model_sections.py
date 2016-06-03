@@ -48,8 +48,9 @@ class Line(Section):
     def intersectar(self,linea_b): #mejorar por interseccion general!!
         puntos = []
         if(linea_b.m!=self.m):
-
-            puntos.append((linea_b.b-self.b)/(self.m-linea_b.m))
+            x_intersectan = (linea_b.b-self.b)/(self.m-linea_b.m)
+            if(x_intersectan>= self.interval[0] and x_intersectan<=self.interval[1] and x_intersectan>= linea_b.interval[0] and x_intersectan<=linea_b.interval[1]):
+                puntos.append(x_intersectan)
         return puntos
 class Point:
     def __init__(self, x, y):
